@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <!-- Menú principal en root -->
+        <menuitem id="philco_web_menu"
+                  name="Philco Shop"
+                  sequence="10"/> <!-- sin parent y sin action, menú padre -->
+
+        <!-- Submenú para Pedidos de Philco Shop -->
+        <menuitem id="philcoshop_web_orders_menu"
+                  name="Pedidos"
+                  parent="philco_web_menu"
+                  action="action_philco_web_order"
+                  sequence="10"/>
+
+        <!-- Submenú de Configuración debajo de "Philco Shop" -->
+        <menuitem id="philco_settings_menu"
+                  name="Conexion"
+                  parent="philco_web_menu"
+                  action="action_philco_settings"
+                  sequence="20"/>
+    </data>
+</odoo>

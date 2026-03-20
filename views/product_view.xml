@@ -1,0 +1,31 @@
+<odoo>
+    <record id="product_template_form_philcoshop" model="ir.ui.view">
+        <field name="name">product.template.form.philcoshop</field>
+        <field name="model">product.template</field>
+        <field name="inherit_id" ref="product.product_template_only_form_view"/>
+        <field name="arch" type="xml">
+            <xpath expr="//page[@name='general_information']" position="after">
+                <page name="Philco shop" string="Philco shop">
+                    <group>
+                        <group string="Opciones producto para la tienda web">
+                            <field name="philco_web_price"/>
+                            <field name="philco_stock"/>
+                            <field name="philco_product_id"/>
+                            <field name="philco_descripcion"/>
+                            <field name="philco_listing_url"/>
+                        </group>
+                        <group string="Opciones producto  2">
+                        <button name="action_send_to_philco_shop" string="Enviar a Philco shop"
+                                    type="object" class="btn-primary"/>
+                        <button name="action_check_product" string="ver data de producto de philco shop"
+                                    type="object" class="btn-success"/>
+                        </group>
+                    </group>
+                    <footer>
+                        
+                    </footer>
+                </page>
+            </xpath>
+        </field>
+    </record>
+</odoo>

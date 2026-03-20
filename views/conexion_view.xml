@@ -1,0 +1,48 @@
+<odoo>
+    <!-- Vista formulario de configuración -->
+    <record id="view_philcoshop_settings_form" model="ir.ui.view">
+        <field name="name">philco.conexion.form</field>
+        <field name="model">philco.conexion</field>
+        <field name="arch" type="xml">
+            <form string="Configuración de la coneccion con philco shop">
+                <sheet>
+                    <group>
+                        <field name="store_name"/>
+                        <field name="url_base"/>
+                        <field name="access_token" password="True"/>
+                        <field name="active"/>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <!-- Vista tipo lista (opcional, para ver varias configuraciones) -->
+    <record id="view_philcoshop_settings_tree" model="ir.ui.view">
+        <field name="name">philco.conexion.tree</field>
+        <field name="model">philco.conexion</field>
+        <field name="arch" type="xml">
+            <list string="Configuraciones de la coneccion con philco shop">
+                 <!-- <header>
+                     <button name="importar_categorias_magento" string="Mi Botón" type="object" class="oe_highlight"/>
+                 </header> -->
+                 <field name="store_name"/>
+                <field name="store_name"/>
+                <field name="url_base"/>
+                <field name="active"/>
+            </list>
+        </field>
+    </record>
+
+    <!-- Acción para abrir la configuración -->
+    <record id="action_philco_settings" model="ir.actions.act_window">
+        <field name="name">Configuración de Philco Shop</field>
+        <field name="res_model">philco.conexion</field>
+        <field name="view_mode">list,form</field>
+        <field name="help" type="html">
+            <p>Aquí puedes definir la conexión con tu tienda philco shop.</p>
+        </field>
+    </record>
+
+   
+</odoo>

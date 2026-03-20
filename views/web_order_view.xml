@@ -1,0 +1,58 @@
+<odoo>
+    <!-- Vista tipo árbol -->
+    <record id="philco_web_order_tree_view" model="ir.ui.view">
+        <field name="name">philco.web.order.tree</field>
+        <field name="model">philco.web.order</field>
+        <field name="arch" type="xml">
+            <list string="pedidos de philco shop">
+                 <header>
+                    <button name="importar_pedidos_philco" string="Importar pedidos" type="object" class="oe_highlight" display="always"/>
+<!--                     // este boton aparce cuando selecciona un registro, si quiero que aparezca siempre, debo agregar display="always"
+                  <button name="importar_categorias_magento" string="Mi Botón" type="object" class="oe_highlight"/>
+   -->                </header>
+                <!-- order_id
+                    customername
+                    is_active
+                    total
+                    status-->
+                <field name="order_id" string="Magento ID"/>
+                <field name="customername" string="Nombre del cliente"/>
+                <field name="is_active" string="Activo"/>
+                <field name="total" string="Total"/>
+                <field name="status" string="Estado"/>
+
+                
+            </list>
+        </field>
+    </record>
+
+    <!-- Vista tipo formulario -->
+    <record id="philcoshop_pedidos_form_view" model="ir.ui.view">
+        <field name="name">philco.web.order.form</field>
+        <field name="model">philco.web.order</field>
+        <field name="arch" type="xml">
+            <form string="Detalles del pedido de philco shop">
+                 
+                <sheet>
+                    <group string="Detalles">
+                        <field name="order_id" string="Magento ID"/>
+                        <field name="customername" string="Nombre del cliente"/>
+                        <field name="is_active" string="Activo"/>
+                        <field name="total" string="Total"/>
+                        <field name="status" string="Estado"/>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <!-- Acción -->
+    <record id="action_philco_web_order" model="ir.actions.act_window">
+        <field name="name">Pedidos web</field>
+        <field name="res_model">philco.web.order</field>
+        <field name="view_mode">list,form</field>
+    </record>
+
+    
+</odoo>
+
