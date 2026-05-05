@@ -14,15 +14,23 @@
         
     """,
     "author": "Pedro Herrera",
-    "depends": ["product"],
+    "depends": ["product", "sale", "l10n_latam_base"],
     "data": [
         "security/ir.model.access.csv",
-        "views/product_view.xml",
+        "views/product_views.xml",
         "views/web_order_view.xml",
         "views/conexion_view.xml",
+        "views/advertisement_video_view.xml",
+        "report/shipping_label_a4_template.xml",
+        "report/shipping_label_a6_template.xml",
+        "views/sale_order_view.xml",
         "views/menu_view.xml",
     ],
-      
+    "assets": {
+        "web.report_assets_common": [
+            "philcoshop/static/src/css/shipping_label.css",
+        ],
+    },
     
 
 

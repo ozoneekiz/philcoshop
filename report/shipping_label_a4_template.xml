@@ -1,0 +1,180 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="paperformat_shipping_label_a4" model="report.paperformat">
+        <field name="name">A4 - 4 Etiquetas de Envio</field>
+        <field name="default" eval="False"/>
+        <field name="format">A4</field>
+        <field name="orientation">Landscape</field>
+        <field name="margin_top">4</field>
+        <field name="margin_bottom">4</field>
+        <field name="margin_left">4</field>
+        <field name="margin_right">4</field>
+        <field name="header_line" eval="False"/>
+        <field name="header_spacing">0</field>
+        <field name="dpi">96</field>
+    </record>
+
+    <record id="action_shipping_label_a4_report" model="ir.actions.report">
+        <field name="name">Etiquetas de Envio A4</field>
+        <field name="model">sale.order</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">philcoshop.shipping_label_a4</field>
+        <field name="report_file">philcoshop.shipping_label_a4</field>
+        <field name="paperformat_id" ref="philcoshop.paperformat_shipping_label_a4"/>
+        <field name="print_report_name">'Etiquetas A4'</field>
+    </record>
+
+    <template id="shipping_label_a4">
+        <t t-call="web.html_container">
+            <style type="text/css">
+                <t t-out="label_css"/>
+            </style>
+            <t t-foreach="chunks" t-as="chunk">
+                <div class="page philco-label-a4-page">
+                    <table cellpadding="0" cellspacing="0" class="philco-label-a4-grid">
+                        <colgroup>
+                            <col class="philco-label-a4-grid-col"/>
+                            <col class="philco-label-a4-grid-col"/>
+                        </colgroup>
+                        <tr class="philco-label-a4-grid-row">
+                            <td class="philco-label-a4-slot">
+                                <t t-if="chunk[0]">
+                                    <t t-set="label" t-value="chunk[0]"/>
+                                    <t t-set="order" t-value="label['order']"/>
+                                    <t t-call="philcoshop.shipping_label_a4_cell"/>
+                                </t>
+                            </td>
+                            <td class="philco-label-a4-slot">
+                                <t t-if="chunk[1]">
+                                    <t t-set="label" t-value="chunk[1]"/>
+                                    <t t-set="order" t-value="label['order']"/>
+                                    <t t-call="philcoshop.shipping_label_a4_cell"/>
+                                </t>
+                            </td>
+                        </tr>
+                        <tr class="philco-label-a4-grid-row">
+                            <td class="philco-label-a4-slot">
+                                <t t-if="chunk[2]">
+                                    <t t-set="label" t-value="chunk[2]"/>
+                                    <t t-set="order" t-value="label['order']"/>
+                                    <t t-call="philcoshop.shipping_label_a4_cell"/>
+                                </t>
+                            </td>
+                            <td class="philco-label-a4-slot">
+                                <t t-if="chunk[3]">
+                                    <t t-set="label" t-value="chunk[3]"/>
+                                    <t t-set="order" t-value="label['order']"/>
+                                    <t t-call="philcoshop.shipping_label_a4_cell"/>
+                                </t>
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+            </t>
+        </t>
+    </template>
+
+    <template id="shipping_label_a4_cell">
+        <div class="philco-label-container">
+        <table cellpadding="0" cellspacing="0" class="philco-label-cell">
+            <colgroup>
+                <col class="philco-label-main-col"/>
+                <col class="philco-label-side-col"/>
+            </colgroup>
+            <tr style="height: 15mm;">
+                <td colspan="2" class="philco-label-header">
+                    <table cellpadding="0" cellspacing="0" style="width: 100%; border-collapse: collapse;">
+                        <tr>
+                            <td class="philco-label-logo-col">
+                                <t t-if="order.company_id.logo">
+                                    <img t-att-src="image_data_uri(order.company_id.logo)" class="philco-label-logo"/>
+                                </t>
+                            </td>
+                            <td style="vertical-align: middle;">
+                                <div class="philco-label-company">
+                                    <t t-esc="order.company_id.name"/>
+                                </div>
+                                <div class="philco-label-muted">
+                                    RUC: <t t-esc="order.company_id.vat or ''"/>
+                                </div>
+                            </td>
+                        </tr>
+                    </table>
+                </td>
+            </tr>
+            <tr style="height: 66mm;">
+                <td class="philco-label-main">
+                    <div class="philco-label-title">Destinatario</div>
+                    <table cellpadding="0" cellspacing="0" class="philco-label-data">
+                        <tr>
+                            <td class="philco-label-data-label">Nombre:</td>
+                            <td class="philco-label-data-value philco-label-name">
+                                <t t-esc="order.partner_id.name"/>
+                            </td>
+                        </tr>
+                        <tr class="philco-label-row-space">
+                            <td class="philco-label-data-label">Documento:</td>
+                            <td class="philco-label-data-value philco-label-document">
+                                <t t-esc="order._get_shipping_label_document()"/>
+                            </td>
+                        </tr>
+                        <tr class="philco-label-row-space">
+                            <td class="philco-label-data-label">Direccion:</td>
+                            <td class="philco-label-data-value philco-label-address">
+                                <t t-set="addr" t-value="order._get_shipping_label_address()"/>
+                                <t t-if="addr == 'Sin direccion registrada'">
+                                    <span class="philco-label-warning">Sin direccion registrada</span>
+                                </t>
+                                <t t-else="">
+                                    <t t-esc="addr"/>
+                                </t>
+                            </td>
+                        </tr>
+                    </table>
+                </td>
+                <td class="philco-label-side">
+                    <div class="philco-label-package">
+                        <div class="philco-label-package-title">Paquete</div>
+                        <div class="philco-label-package-count">
+                            <t t-esc="label['package_index']"/> de <t t-esc="label['package_total']"/>
+                        </div>
+                    </div>
+                    <div class="philco-label-title">Agencia</div>
+                    <div class="philco-label-agency">
+                        <t t-esc="order.transport_company_name or '-'"/>
+                    </div>
+                    <div class="philco-label-barcode-wrap">
+                        <div t-out="order.name"
+                             t-options="{'widget': 'barcode', 'symbology': 'auto', 'img_style': 'overflow: hidden; width: 32mm; height: 12mm;', 'humanreadable': False}"
+                             class="philco-label-barcode"/>
+                        <div class="philco-label-muted" style="margin-top: 1mm;">
+                            <t t-esc="order.name"/>
+                        </div>
+                    </div>
+                </td>
+            </tr>
+            <tr style="height: 11mm;">
+                <td colspan="2" class="philco-label-footer">
+                    <table cellpadding="0" cellspacing="0" class="philco-label-handling">
+                        <tr>
+                            <td class="philco-label-handling-item">
+                                <img t-att-src="handling_icons.get('fragil')" class="philco-label-handling-icon"/>
+                                <div class="philco-label-handling-text">FRAGIL</div>
+                            </td>
+                            <td class="philco-label-handling-item">
+                                <img t-att-src="handling_icons.get('up')" class="philco-label-handling-icon"/>
+                                <div class="philco-label-handling-text">ESTE LADO ARRIBA</div>
+                            </td>
+                            <td class="philco-label-handling-item">
+                                <img t-att-src="handling_icons.get('dry')" class="philco-label-handling-icon"/>
+                                <div class="philco-label-handling-text">NO MOJAR</div>
+                            </td>
+                            <td class="philco-label-order-foot">Pedido Nro: <t t-esc="order.name"/></td>
+                        </tr>
+                    </table>
+                </td>
+            </tr>
+        </table>
+        </div>
+    </template>
+</odoo>

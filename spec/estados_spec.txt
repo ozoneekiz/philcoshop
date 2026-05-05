@@ -1,0 +1,281 @@
+Necesito que implementes una extensión del modelo `sale.order` en Odoo para notificar a una tienda Laravel cuando cambie el estado comercial del pedido.
+
+# Objetivo
+Sincronizar únicamente el **estado comercial** del pedido de Odoo hacia Laravel mediante una solicitud HTTP POST.
+
+No quiero sincronizar por ahora:
+- estado de facturación
+- estado de envío / entrega
+
+Esos seguirán manejándose solo dentro de Odoo.
+
+# Contexto técnico
+Ya tengo el módulo creado.
+Ya existe el modelo `philco.conexion`.
+La configuración activa se puede obtener mediante este método que use en product.py:
+
+```python
+def _get_philco_settings(self):
+    settings = self.env['philco.conexion'].search(
+        [('active', '=', True)], limit=1
+    )
+    if not settings:
+        raise UserError(
+            "No se encontró configuración activa para Philco Shop. "
+            "Ve a Configuración → Philco Conexión y activa una."
+        )
+    return settings
+```python
+
+La autenticación y datos de conexión del endpoint deben salir desde philco.conexion.
+No inventes la conexión fuera de ese modelo.
+
+Endpoint
+
+Cuando cambie el estado comercial del pedido, enviar POST a:
+
+/orders/{id}/status
+
+donde {id} debe ser el id interno de sale.order en Odoo.
+
+Ejemplo:
+
+si el pedido en Odoo tiene id = 25
+el endpoint final debe ser algo como:
+BASE_URL/orders/25/status
+
+Importante:
+
+usar siempre sale.order.id
+no crear campo adicional para ID externo
+no usar name
+no usar client_order_ref
+Alcance funcional
+
+Detectar y notificar cambios del estado comercial del pedido, al menos en estos casos:
+
+draft -> sale
+sale -> draft
+draft -> cancel
+sale -> cancel
+sent -> sale
+cualquier otro cambio relevante del campo state
+
+Quiero que la solución sea robusta y no dependa solamente de un único botón o acción.
+
+Estados relevantes de Odoo
+
+Tomar en cuenta al menos estos estados comerciales de sale.order:
+
+draft
+sent
+sale
+cancel
+Estados Laravel
+
+La tienda Laravel actualmente maneja estos estados:
+
+pending
+processing
+confirmed
+shipped
+delivered
+cancelled
+failed
+
+Pero para esta integración, por ahora solo quiero sincronizar el estado comercial.
+
+Mapeo de estados Odoo -> Laravel
+
+Implementar un método de mapeo claro y reutilizable.
+
+Usar este mapeo base:
+
+draft -> pending
+sent -> pending
+sale -> confirmed
+cancel -> cancelled
+
+Si aparece un estado no contemplado, dejarlo logueado de forma clara y evitar romper el flujo.
+
+Estrategia de implementación
+
+Quiero una implementación limpia, robusta y mantenible.
+
+1. Heredar sale.order
+
+Crear una extensión del modelo sale.order.
+
+2. Detectar cambios reales de estado
+
+La detección debe cubrir cambios del campo state, incluso si ocurren por distintas vías.
+
+3. Métodos a intervenir
+
+Usar primero los métodos estándar del flujo de Odoo cuando corresponda, por ejemplo:
+
+action_confirm()
+action_cancel()
+método estándar para volver a borrador, si existe en esta versión
+
+Pero además quiero un mecanismo robusto para detectar cambios de state también si ocurren por write() u otra vía válida.
+
+No quiero una solución frágil que dependa solo de action_confirm().
+
+4. Evitar duplicación de notificaciones
+
+Si una misma operación dispara varios cambios internos, evitar enviar múltiples POST innecesarios para el mismo pedido dentro de la misma operación.
+Priorizar una única notificación final con el estado resultante final del pedido.
+
+Método privado reutilizable
+
+Crear un método privado reutilizable, por ejemplo:
+
+_notify_philco_order_status()
+
+Ese método debe:
+
+recorrer self
+obtener la configuración activa usando _get_philco_settings()
+construir la URL final
+construir el payload
+enviar el POST
+registrar logs útiles
+manejar errores correctamente
+
+También crear métodos auxiliares separados para:
+
+mapear estado Odoo -> Laravel
+construir headers
+construir payload
+enviar request
+
+No mezclar todo en un solo método gigante.
+
+Payload requerido
+
+Enviar JSON con esta estructura mínima:
+{
+  "status": "confirmed",
+  "odoo_state": "sale",
+  "odoo_order_id": 25,
+  "odoo_order_name": "S00025"
+}
+Donde:
+
+status = estado normalizado para Laravel
+odoo_state = estado real de Odoo (draft, sent, sale, cancel)
+odoo_order_id = sale.order.id
+odoo_order_name = nombre del pedido
+Momento del envío
+
+La notificación debe enviarse después de que el cambio de estado ya fue aplicado correctamente en Odoo.
+
+No quiero enviar la notificación antes del super() si eso puede provocar desincronización.
+
+Conexión y autenticación
+
+La URL base y autenticación deben salir desde philco.conexion.
+
+Requisitos:
+
+obtener settings con _get_philco_settings()
+usar la URL base configurada allí
+si existe token o mecanismo de autenticación configurado en ese modelo, usarlo
+encapsular la construcción de headers en un método separado
+no hardcodear tokens ni credenciales
+
+Si el nombre exacto de campos de conexión en philco.conexion no está completamente claro, dejar el código fácil de adaptar y marcar claramente el supuesto.
+
+Librería HTTP
+
+Usar requests.
+
+Timeout
+
+Usar timeout explícito, por ejemplo 10 segundos.
+
+Política de errores
+
+Implementar por defecto modo tolerante:
+
+si falla el POST, registrar el error
+no bloquear el flujo del pedido en Odoo
+
+Pero dejar el código organizado para que luego se pueda pasar fácilmente a modo estricto con UserError si se desea.
+
+Logs
+
+Agregar logs útiles y limpios:
+
+inicio del envío
+pedido afectado
+estado anterior y nuevo si está disponible
+URL de destino
+payload
+código HTTP de respuesta
+cuerpo de respuesta si aporta valor
+errores y excepciones
+
+No exponer tokens completos ni información sensible en logs.
+
+Comportamiento esperado
+Caso 1
+
+Pedido en draft, luego confirmado:
+
+Odoo cambia a sale
+enviar POST a /orders/{id}/status
+payload con:
+status = confirmed
+odoo_state = sale
+Caso 2
+
+Pedido en sale, luego vuelve a draft:
+
+enviar POST
+payload con:
+status = pending
+odoo_state = draft
+Caso 3
+
+Pedido cancelado:
+
+enviar POST
+payload con:
+status = cancelled
+odoo_state = cancel
+Caso 4
+
+Pedido en sent:
+
+si cambia y corresponde notificación, mapearlo como pending
+Calidad del código
+
+Quiero:
+
+código limpio
+compatible con estilo Odoo
+imports correctos
+_logger configurado
+sin duplicación innecesaria
+comentarios breves y útiles
+nombres claros
+código listo para pegar
+Archivos a generar o modificar
+
+Como mínimo:
+
+models/sale_order.py
+models/__init__.py
+
+Si hace falta, agregar comentarios breves para indicar dónde adaptar nombres de campos de configuración en philco.conexion.
+
+Entrega esperada
+
+Quiero que me devuelvas:
+
+una explicación breve de la estrategia elegida
+el código completo listo para pegar
+notas sobre diferencias posibles entre versiones de Odoo para volver a borrador
+supuestos importantes claramente marcados

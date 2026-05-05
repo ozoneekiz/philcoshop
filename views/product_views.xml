@@ -1,0 +1,271 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- ================================================================== -->
+    <!-- Vista inline del One2many de imágenes                               -->
+    <!-- ================================================================== -->
+    <record id="philco_product_image_view_list" model="ir.ui.view">
+        <field name="name">philco.product.image.view.list.inline</field>
+        <field name="model">philco.product.image</field>
+        <field name="arch" type="xml">
+            <list editable="bottom">
+                <field name="sequence" widget="handle" />
+                <field name="image"
+                       widget="image"
+                       options="{'size': [80, 80]}"
+                       string="Vista previa" />
+                <field name="name" string="Descripción (opcional)" />
+            </list>
+        </field>
+    </record>
+
+    <!-- ================================================================== -->
+    <!-- Tab Philco Shop en el formulario de producto                        -->
+    <!-- ================================================================== -->
+    <record id="product_template_form_philcoshop" model="ir.ui.view">
+        <field name="name">product.template.form.philcoshop</field>
+        <field name="model">product.template</field>
+        <field name="inherit_id" ref="product.product_template_only_form_view" />
+        <field name="arch" type="xml">
+            <xpath expr="//page[@name='general_information']" position="after">
+                <page name="philco_shop" string="Philco Shop">
+
+                    <!-- Campos ocultos -->
+                    <field name="philco_product_id" invisible="1" />
+                    <field name="philco_api_message" invisible="1" />
+
+                    <!-- Alerta si Laravel no responde -->
+                    <div class="alert alert-warning mb-3"
+                         invisible="not philco_api_message">
+                        <span class="fa fa-plug me-2" />
+                        <field name="philco_api_message"
+                               nolabel="1"
+                               readonly="1"
+                               class="oe_inline" />
+                    </div>
+
+                    <!-- ================================================== -->
+                    <!-- Fila 1: datos del producto + visibilidad            -->
+                    <!-- ================================================== -->
+                    <div class="row">
+
+                        <!-- Columna izquierda: datos editables -->
+                        <div class="col-6">
+                            <group string="Datos del producto">
+                                <field name="philco_web_price"
+                                       string="Precio regular web"
+                                       help="Si es 0 se usa el precio de lista de Odoo." />
+                                <field name="philco_discount_price"
+                                       string="Precio oferta (0 = sin oferta)" />
+                                <field name="philco_stock"
+                                       string="Stock disponible" />
+                                <field name="philco_descripcion"
+                                       string="Descripción corta" />
+                                <field name="philco_video_url"
+                                       string="URL del video"
+                                       widget="url"
+                                       placeholder="https://youtube.com/watch?v=..." />
+                                <field name="philco_slug"
+                                       string="Slug" />
+                                <field name="product_tag_ids"
+                                       string="Etiquetas"
+                                       widget="many2many_tags" />
+                            </group>
+                        </div>
+
+                        <!-- Columna derecha: visibilidad y métricas -->
+                        <div class="col-6">
+                            <group string="Visibilidad">
+                                <field name="philco_is_active"
+                                       string="Activo en tienda"
+                                       widget="boolean_toggle" />
+                                <field name="philco_is_new"
+                                       string="Mostrar etiqueta 'Nuevo'"
+                                       widget="boolean_toggle" />
+                                <field name="philco_is_on_sale"
+                                       string="Mostrar etiqueta 'En oferta'"
+                                       widget="boolean_toggle" />
+                                <field name="philco_is_featured"
+                                       string="Destacado"
+                                       widget="boolean_toggle" />
+                            </group>
+
+                            <group string="Referencia">
+                                <field name="philco_product_id"
+                                       string="ID en Philco Shop"
+                                       readonly="1" />
+                                <field name="philco_listing_url"
+                                       string="URL del producto"
+                                       widget="url"
+                                       readonly="1" />
+                                <field name="philco_last_sync_at"
+                                       string="Último envío"
+                                       readonly="1" />
+                            </group>
+
+                            <group string="Métricas">
+                                <field name="philco_likes_count"  string="Likes"       readonly="1" />
+                                <field name="philco_shares_count" string="Compartidos" readonly="1" />
+                                <field name="philco_views_count"  string="Vistas"      readonly="1" />
+                                <field name="philco_sales_count"  string="Ventas web"  readonly="1" />
+                            </group>
+                        </div>
+
+                    </div>
+
+                    <!-- ================================================== -->
+                    <!-- Fila 2: imágenes                                    -->
+                    <!-- ================================================== -->
+                    <div class="row mt-3">
+
+                        <!-- Imagen vertical -->
+                        <div class="col-3">
+                            <group string="Imagen vertical">
+                                <field name="philco_vertical_image"
+                                       nolabel="1"
+                                       widget="image"
+                                       options="{'size': [200, 350]}" />
+                            </group>
+                        </div>
+
+                        <!-- Galería web -->
+                        <div class="col-9">
+                            <group string="Galería de imágenes web">
+                                <field name="philco_image_ids"
+                                       nolabel="1"
+                                       widget="one2many">
+                                    <list editable="bottom">
+                                        <field name="sequence" widget="handle" />
+                                        <field name="image"
+                                               widget="image"
+                                               options="{'size': [80, 80]}"
+                                               string="Vista previa" />
+                                        <field name="name"
+                                               string="Descripción (opcional)"
+                                               optional="show" />
+                                    </list>
+                                </field>
+                            </group>
+                        </div>
+
+                    </div>
+
+                    <!-- ================================================== -->
+                    <!-- Botones de acción                                   -->
+                    <!-- ================================================== -->
+                    <div class="mt-4">
+                        <group string="Acciones Philco Shop">
+                            <div class="d-flex flex-wrap gap-2">
+
+                                <!-- Solo visible si el producto AÚN NO está en Philco -->
+                                <button name="action_send_to_philco_shop"
+                                        string="📤 Publicar en tienda"
+                                        type="object"
+                                        class="btn btn-primary"
+                                        invisible="philco_product_id != 0"
+                                        help="Crea el producto en Philco Shop con todos sus datos e imágenes." />
+
+                                <!-- Solo visibles si el producto YA está en Philco -->
+                                <button name="action_update_product"
+                                        string="🔄 Actualizar datos"
+                                        type="object"
+                                        class="btn btn-success"
+                                        invisible="philco_product_id == 0"
+                                        help="Envía todos los campos (sin imágenes) a Philco Shop. se envia etiquestas y precios por uom" />
+
+                                <button name="action_update_gallery"
+                                        string="🖼 Actualizar galería"
+                                        type="object"
+                                        class="btn btn-info"
+                                        invisible="philco_product_id == 0"
+                                        help="Envía las imágenes de la galería a Philco Shop." />
+
+                                <button name="action_update_image"
+                                        string="🖼 Actualizar imagen vertical"
+                                        type="object"
+                                        class="btn btn-info"
+                                        invisible="philco_product_id == 0"
+                                        help="Envía solo la imagen vertical a Philco Shop." />
+
+                                <button name="action_unpublish_from_philco"
+                                        string="⏸ Desactivar en tienda"
+                                        type="object"
+                                        class="btn btn-warning"
+                                        invisible="philco_product_id == 0"
+                                        help="Oculta el producto en Philco Shop sin borrarlo." />
+
+                            </div>
+                        </group>
+                    </div>
+
+                </page>
+            </xpath>
+        </field>
+    </record>
+
+    <!-- ================================================================== -->
+    <!-- Vista lista de productos con filtros Philco Shop                   -->
+    <!-- ================================================================== -->
+    <record id="product_template_list_philco" model="ir.ui.view">
+        <field name="name">product.template.list.philco</field>
+        <field name="model">product.template</field>
+        <field name="inherit_id" ref="product.product_template_tree_view" />
+        <field name="arch" type="xml">
+            <xpath expr="//list" position="inside">
+                <field name="philco_is_active"
+                       string="Activo web"
+                       optional="show"
+                       widget="boolean" />
+                <field name="philco_web_price"
+                       string="Precio web"
+                       optional="show" />
+                <field name="philco_last_sync_at"
+                       string="Último sync"
+                       optional="show" />
+            </xpath>
+        </field>
+    </record>
+
+    <!-- ================================================================== -->
+    <!-- Filtros y agrupaciones Philco en la búsqueda de productos          -->
+    <!-- ================================================================== -->
+    <record id="product_template_search_philco" model="ir.ui.view">
+        <field name="name">product.template.search.philco</field>
+        <field name="model">product.template</field>
+        <field name="inherit_id" ref="product.product_template_search_view" />
+        <field name="arch" type="xml">
+            <xpath expr="//search" position="inside">
+
+                <separator />
+
+                <!-- Filtros rápidos -->
+                <filter string="Activos en tienda"
+                        name="philco_active"
+                        domain="[('philco_is_active', '=', True)]" />
+
+                <filter string="Inactivos en tienda"
+                        name="philco_inactive"
+                        domain="[('philco_is_active', '=', False),
+                                  ('philco_product_id', '!=', 0)]" />
+
+                <filter string="Publicados en Philco"
+                        name="philco_published"
+                        domain="[('philco_product_id', '!=', 0)]" />
+
+                <filter string="Sin publicar en Philco"
+                        name="philco_not_published"
+                        domain="[('philco_product_id', '=', 0)]" />
+
+                <separator />
+
+                <!-- Agrupación -->
+                <group expand="0" string="Agrupar por">
+                    <filter string="Estado en tienda"
+                            name="group_philco_active"
+                            context="{'group_by': 'philco_is_active'}" />
+                </group>
+
+            </xpath>
+        </field>
+    </record>
+
+</odoo>

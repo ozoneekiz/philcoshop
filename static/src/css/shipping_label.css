@@ -1,0 +1,324 @@
+.philco-label-a4-page {
+    font-family: Arial, sans-serif;
+    width: 289mm;
+    height: 202mm;
+    margin: 0;
+    padding: 0;
+}
+
+.philco-label-a4-grid {
+    width: 289mm;
+    height: 202mm;
+    border-collapse: collapse;
+    table-layout: fixed;
+}
+
+.philco-label-a4-grid-col {
+    width: 180mm;
+}
+
+.philco-label-a4-grid-row {
+    height: 125mm;
+}
+
+.philco-label-a4-slot {
+    width: 180mm;
+    height: 135mm;
+   /*  border: 1px dashed #999; */
+    padding: 1mm;
+    vertical-align: top;
+    
+}
+
+.philco-label-a6-page {
+    font-family: Arial, sans-serif;
+    width: 180mm;
+    height: 128mm;
+    margin: 0;
+    padding: 3mm 0 0 3mm;
+    overflow: hidden;
+    page-break-after: always;
+    break-after: page;
+    /* background-color: #e29393; */
+}
+.philco-label-a6-page .philco-label-container {
+    width: 177mm;
+    height: 126mm;
+    padding: 2mm;
+    box-sizing: border-box;
+    /* background-color: #858585; */
+}
+.philco-label-a6-page:last-child {
+    page-break-after: auto;
+    break-after: auto;
+}
+
+
+
+.philco-label-a6-page .philco-label-cell {
+    height: 97mm;
+}
+
+.philco-label-a6-page .philco-label-main-col {
+    width: 96mm;
+}
+
+.philco-label-a6-page .philco-label-side-col {
+    width: 38mm;
+}
+
+.philco-label-a6-page .philco-label-main {
+    width: 96mm;
+    padding-top: 2mm;
+    padding-right: 2mm;
+}
+
+.philco-label-a6-page .philco-label-side {
+    width: 38mm;
+    padding-top: 2mm;
+    padding-left: 2mm;
+}
+
+.philco-label-a6-page .philco-label-package {
+    margin-bottom: 7mm;
+}
+
+.philco-label-a6-page .philco-label-package-title {
+    margin-bottom: 4px;
+}
+
+.philco-label-a6-page .philco-label-barcode-wrap {
+    margin-top: 6mm;
+}
+
+.philco-label-a6-page .philco-label-footer {
+    padding-top: 1mm;
+}
+
+.philco-label-a6-page .philco-label-company {
+    font-size: 10pt;
+}
+
+.philco-label-a6-page .philco-label-muted {
+    font-size: 10pt;
+}
+
+.philco-label-a6-page .philco-label-title {
+    font-size: 10pt;
+}
+
+.philco-label-a6-page .philco-label-name,
+.philco-label-a6-page .philco-label-document {
+    font-size: 20pt;
+}
+
+.philco-label-a6-page .philco-label-address {
+    font-size: 12pt;
+}
+
+.philco-label-a6-page .philco-label-package-count {
+    font-size: 16pt;
+}
+
+.philco-label-a6-page .philco-label-agency {
+    font-size: 12pt;
+}
+
+.philco-label-a6-page .philco-label-order-foot {
+    font-size: 12pt;
+}
+
+.philco-label-container {
+    width: 100%;
+    height: 100%;
+    padding: 2mm;
+    box-sizing: border-box;
+    border: 2px solid #858585;
+    border-radius: 7px;
+}
+.philco-label-cell {
+    width: 100%;
+    height: 115mm;
+    border-collapse: collapse;
+    table-layout: fixed;
+    font-family: Arial, sans-serif;
+    
+}
+
+.philco-label-main-col {
+    width: 88mm;
+}
+
+.philco-label-side-col {
+    width: 39mm;
+}
+
+.philco-label-header {
+    border-bottom: 2px solid #222;
+    padding-bottom: 2mm;
+    vertical-align: middle;
+}
+
+.philco-label-logo-col {
+    width: 16mm;
+    vertical-align: middle;
+}
+
+.philco-label-logo {
+    width: 13mm;
+    max-height: 13mm;
+}
+
+.philco-label-company {
+    font-size: 11pt;
+    font-weight: bold;
+    color: #111;
+}
+
+.philco-label-muted {
+    font-size: 10pt;
+    color: #777;
+}
+
+.philco-label-title {
+    font-size: 10pt;
+    color: #2b2b2b;
+    text-transform: uppercase;
+}
+
+.philco-label-main {
+    width: 88mm;
+    padding-top: 3mm;
+    padding-right: 3mm;
+    vertical-align: top;
+}
+
+.philco-label-side {
+    width: 39mm;
+    border-left: 1px solid #ddd;
+    padding-top: 3mm;
+    padding-left: 3mm;
+    text-align: center;
+    vertical-align: top;
+}
+
+.philco-label-package {
+    margin-bottom: 12mm;
+    text-align: center;
+    background-color: #cecece;
+    border-radius: 4px;
+    padding: 10px auto;
+}
+
+.philco-label-package-title {
+    font-size: 12pt;
+    color: #000000;
+    font-weight: bold;
+    margin-bottom: 10px;
+}
+
+.philco-label-package-count {
+    font-size: 20pt;
+    color: #111;
+    font-weight: bold;
+    line-height: 1.1;
+}
+
+.philco-label-data {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 2mm;
+}
+
+.philco-label-data-label {
+    width: 21mm;
+    font-size: 8pt;
+    font-weight: bold;
+    vertical-align: top;
+}
+
+.philco-label-data-value {
+    font-size: 10pt;
+    vertical-align: top;
+}
+
+.philco-label-name , .philco-label-document {
+    font-size: 22pt;
+    font-weight: bold;
+    line-height: 1.15;
+}
+
+.philco-label-row-space td {
+    padding-top: 2mm;
+}
+
+.philco-label-address {
+    line-height: 1.2;
+    font-size: 16pt;
+}
+
+.philco-label-warning {
+    color: #b00020;
+    font-weight: bold;
+}
+
+.philco-label-agency {
+    font-size: 12pt;
+    font-weight: bold;
+    color: #111;
+    margin-top: 2mm;
+}
+
+.philco-label-barcode-wrap {
+    margin-top: 9mm;
+
+}
+
+.philco-label-barcode {
+    width: 32mm;
+    height: 12mm;
+    margin-left: auto;
+    margin-right: auto;
+    text-align: center;
+}
+
+.philco-label-barcode img {
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+}
+.philco-label-footer {
+    border-top: 1px solid #ddd;
+    padding-top: 2mm;
+    vertical-align: top;
+}
+
+.philco-label-handling {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.philco-label-handling-item {
+    width: 24mm;
+    text-align: center;
+    vertical-align: top;
+}
+
+.philco-label-handling-icon {
+    width: 9mm;
+    height: 9mm;
+}
+
+.philco-label-handling-text {
+    font-size: 6.5pt;
+    color: #444;
+    font-weight: bold;
+    margin-top: 1mm;
+}
+
+.philco-label-order-foot {
+    font-size: 12pt;
+    color: #242424;
+    text-align: right;
+    vertical-align: middle;
+}

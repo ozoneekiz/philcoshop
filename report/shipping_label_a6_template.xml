@@ -1,0 +1,155 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="paperformat_shipping_label_a6" model="report.paperformat">
+        <field name="name">A6 Horizontal - Etiqueta Envio</field>
+        <field name="default" eval="False"/>
+        <field name="format">custom</field>
+        <field name="page_height">105</field>
+        <field name="page_width">148</field>
+        <field name="orientation">Portrait</field>
+        <field name="margin_top">0</field>
+        <field name="margin_bottom">0</field>
+        <field name="margin_left">0</field>
+        <field name="margin_right">0</field>
+        <field name="header_line" eval="False"/>
+        <field name="header_spacing">0</field>
+        <field name="dpi">96</field>
+    </record>
+
+    <record id="action_shipping_label_a6_report" model="ir.actions.report">
+        <field name="name">Etiqueta de Envio A6</field>
+        <field name="model">sale.order</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">philcoshop.shipping_label_a6</field>
+        <field name="report_file">philcoshop.shipping_label_a6</field>
+        <field name="paperformat_id" ref="philcoshop.paperformat_shipping_label_a6"/>
+        <field name="print_report_name">'Etiquetas A6'</field>
+    </record>
+
+    <template id="shipping_label_a6">
+        <t t-call="web.html_container">
+            <style type="text/css">
+                <t t-out="label_css"/>
+                @page {
+                    size: 148mm 105mm;
+                    margin: 0;
+                }
+                html,
+                body,
+                #wrapwrap,
+                main {
+                    margin: 0;
+                    padding: 0;
+                    width: 148mm;
+                    min-width: 148mm;
+                }
+            </style>
+            <t t-foreach="labels" t-as="label">
+                <t t-set="order" t-value="label['order']"/>
+                <div class="page philco-label-a6-page">
+                    <div class="philco-label-container">
+                        <table cellpadding="0" cellspacing="0" class="philco-label-cell">
+                            <colgroup>
+                                <col class="philco-label-main-col"/>
+                                <col class="philco-label-side-col"/>
+                            </colgroup>
+                            <tr style="height: 15mm;">
+                                <td colspan="2" class="philco-label-header">
+                                    <table cellpadding="0" cellspacing="0" style="width: 100%; border-collapse: collapse;">
+                                        <tr>
+                                            <td class="philco-label-logo-col">
+                                                <t t-if="order.company_id.logo">
+                                                    <img t-att-src="image_data_uri(order.company_id.logo)" class="philco-label-logo"/>
+                                                </t>
+                                            </td>
+                                            <td style="vertical-align: middle;">
+                                                <div class="philco-label-company">
+                                                    <t t-esc="order.company_id.name"/>
+                                                </div>
+                                                <div class="philco-label-muted">
+                                                    RUC: <t t-esc="order.company_id.vat or ''"/>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    </table>
+                                </td>
+                            </tr>
+                            <tr style="height: 66mm;">
+                                <td class="philco-label-main">
+                                    <div class="philco-label-title">Destinatario</div>
+                                    <table cellpadding="0" cellspacing="0" class="philco-label-data">
+                                        <tr>
+                                            <td class="philco-label-data-label">Nombre:</td>
+                                            <td class="philco-label-data-value philco-label-name">
+                                                <t t-esc="order.partner_id.name"/>
+                                            </td>
+                                        </tr>
+                                        <tr class="philco-label-row-space">
+                                            <td class="philco-label-data-label">Documento:</td>
+                                            <td class="philco-label-data-value philco-label-document">
+                                                <t t-esc="order._get_shipping_label_document()"/>
+                                            </td>
+                                        </tr>
+                                        <tr class="philco-label-row-space">
+                                            <td class="philco-label-data-label">Direccion:</td>
+                                            <td class="philco-label-data-value philco-label-address">
+                                                <t t-set="addr" t-value="order._get_shipping_label_address()"/>
+                                                <t t-if="addr == 'Sin direccion registrada'">
+                                                    <span class="philco-label-warning">Sin direccion registrada</span>
+                                                </t>
+                                                <t t-else="">
+                                                    <t t-esc="addr"/>
+                                                </t>
+                                            </td>
+                                        </tr>
+                                    </table>
+                                </td>
+                                <td class="philco-label-side">
+                                    <div class="philco-label-package">
+                                        <div class="philco-label-package-title">Paquete</div>
+                                        <div class="philco-label-package-count">
+                                            <t t-esc="label['package_index']"/> de <t t-esc="label['package_total']"/>
+                                        </div>
+                                    </div>
+                                    <div class="philco-label-title">Agencia</div>
+                                    <div class="philco-label-agency">
+                                        <t t-esc="order.transport_company_name or '-'"/>
+                                    </div>
+                                    <div class="philco-label-barcode-wrap">
+                                        <div t-out="order.name"
+                                             t-options="{'widget': 'barcode', 'symbology': 'auto', 'img_style': 'overflow: hidden; width: 32mm; height: 12mm;', 'humanreadable': False}"
+                                             class="philco-label-barcode"/>
+                                        <div class="philco-label-muted" style="margin-top: 1mm;">
+                                            <t t-esc="order.name"/>
+                                        </div>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr style="height: 11mm;">
+                                <td colspan="2" class="philco-label-footer">
+                                    <table cellpadding="0" cellspacing="0" class="philco-label-handling">
+                                        <tr>
+                                            <td class="philco-label-handling-item">
+                                                <img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI5NiIgaGVpZ2h0PSI5NiIgdmlld0JveD0iMCAwIDk2IDk2Ij4KICA8cmVjdCB4PSI4IiB5PSI4IiB3aWR0aD0iODAiIGhlaWdodD0iODAiIHJ4PSI2IiBmaWxsPSJub25lIiBzdHJva2U9IiMyMjIiIHN0cm9rZS13aWR0aD0iNCIvPgogIDxwYXRoIGQ9Ik0zMiAxOGMtNiAxOC0yIDMxIDE2IDMxczIyLTEzIDE2LTMxSDMyeiIgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjMjIyIiBzdHJva2Utd2lkdGg9IjQiIHN0cm9rZS1saW5lam9pbj0icm91bmQiLz4KICA8cGF0aCBkPSJNNDggNDl2MjRNMzUgNzNoMjYiIGZpbGw9Im5vbmUiIHN0cm9rZT0iIzIyMiIgc3Ryb2tlLXdpZHRoPSI0IiBzdHJva2UtbGluZWNhcD0icm91bmQiLz4KICA8cGF0aCBkPSJNNDQgMjNsOCA4LTggOCA4IDgiIGZpbGw9Im5vbmUiIHN0cm9rZT0iIzIyMiIgc3Ryb2tlLXdpZHRoPSIzIiBzdHJva2UtbGluZWNhcD0icm91bmQiIHN0cm9rZS1saW5lam9pbj0icm91bmQiLz4KPC9zdmc+Cg==" class="philco-label-handling-icon"/>
+                                                <div class="philco-label-handling-text">FRAGIL</div>
+                                            </td>
+                                            <td class="philco-label-handling-item">
+                                                <img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI5NiIgaGVpZ2h0PSI5NiIgdmlld0JveD0iMCAwIDk2IDk2Ij4KICA8cmVjdCB4PSI4IiB5PSI4IiB3aWR0aD0iODAiIGhlaWdodD0iODAiIHJ4PSI2IiBmaWxsPSJub25lIiBzdHJva2U9IiMyMjIiIHN0cm9rZS13aWR0aD0iNCIvPgogIDxwYXRoIGQ9Ik0zMiA0NmwxNi0yMCAxNiAyME00OCAyOHY0MiIgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjMjIyIiBzdHJva2Utd2lkdGg9IjUiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIgc3Ryb2tlLWxpbmVqb2luPSJyb3VuZCIvPgogIDxwYXRoIGQ9Ik0zMCA3NGgzNiIgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjMjIyIiBzdHJva2Utd2lkdGg9IjUiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIvPgo8L3N2Zz4K" class="philco-label-handling-icon"/>
+                                                <div class="philco-label-handling-text">ESTE LADO ARRIBA</div>
+                                            </td>
+                                            <td class="philco-label-handling-item">
+                                                <img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI5NiIgaGVpZ2h0PSI5NiIgdmlld0JveD0iMCAwIDk2IDk2Ij4KICA8cmVjdCB4PSI4IiB5PSI4IiB3aWR0aD0iODAiIGhlaWdodD0iODAiIHJ4PSI2IiBmaWxsPSJub25lIiBzdHJva2U9IiMyMjIiIHN0cm9rZS13aWR0aD0iNCIvPgogIDxwYXRoIGQ9Ik0yMiA0NWMxNi0yMiAzNi0yMiA1MiAwIiBmaWxsPSJub25lIiBzdHJva2U9IiMyMjIiIHN0cm9rZS13aWR0aD0iNSIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIi8+CiAgPHBhdGggZD0iTTQ4IDQ0djI4YzAgOCA3IDEwIDEyIDYiIGZpbGw9Im5vbmUiIHN0cm9rZT0iIzIyMiIgc3Ryb2tlLXdpZHRoPSI1IiBzdHJva2UtbGluZWNhcD0icm91bmQiLz4KICA8cGF0aCBkPSJNMjggMjdsNDAgNDAiIGZpbGw9Im5vbmUiIHN0cm9rZT0iIzIyMiIgc3Ryb2tlLXdpZHRoPSI1IiBzdHJva2UtbGluZWNhcD0icm91bmQiLz4KICA8Y2lyY2xlIGN4PSIzNCIgY3k9IjMyIiByPSIzIiBmaWxsPSIjMjIyIi8+CiAgPGNpcmNsZSBjeD0iNTAiIGN5PSIyNSIgcj0iMyIgZmlsbD0iIzIyMiIvPgogIDxjaXJjbGUgY3g9IjY0IiBjeT0iMzQiIHI9IjMiIGZpbGw9IiMyMjIiLz4KPC9zdmc+Cg==" class="philco-label-handling-icon"/>
+                                                <div class="philco-label-handling-text">NO MOJAR</div>
+                                            </td>
+                                            <td class="philco-label-order-foot">Pedido Nro: <t t-esc="order.name"/></td>
+                                        </tr>
+                                    </table>
+                                </td>
+                            </tr>
+                        </table>
+                    </div>
+                </div>
+            </t>
+        </t>
+    </template>
+</odoo>

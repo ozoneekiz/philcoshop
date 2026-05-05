@@ -7,10 +7,23 @@
             <form string="Configuración de la coneccion con philco shop">
                 <sheet>
                     <group>
-                        <field name="store_name"/>
+                        <field name="name"/>
                         <field name="url_base"/>
+                        
+                        <field name="api_endpoint"/>
+                        <field name="whatsapp_number"/>
                         <field name="access_token" password="True"/>
                         <field name="active"/>
+                        <field name="days_to_expire" widget="integer"/>
+                        <field name="url_shared" widget="url" readonly="True"/> <!-- Campo para mostrar la URL para compartir -->
+                        <field name="expire_date"  readonly="True"/> <!-- Campo para mostrar la fecha de expiración -->
+                    </group>
+                    <group name="conexion_status" string="Estado de la Conexión">
+                        <button name="verificar_conexion" string="Verificar Conexión" type="object" class="oe_highlight"/>
+                        <button name="actualizar_whatsapp_number" string="Actualizar Número de WhatsApp" type="object" class="oe_highlight"/>
+                        <button name="crear_empresa" string="Crear Empresa en Philco Shop" type="object" class="oe_highlight"/>
+                        
+                        <button name="get_url_shared" string="Obtener URL para Compartir" type="object" class="oe_highlight" />
                     </group>
                 </sheet>
             </form>
@@ -26,10 +39,12 @@
                  <!-- <header>
                      <button name="importar_categorias_magento" string="Mi Botón" type="object" class="oe_highlight"/>
                  </header> -->
-                 <field name="store_name"/>
-                <field name="store_name"/>
+                <field name="name"/>
                 <field name="url_base"/>
+                <field name="api_endpoint"/>
+                <field name="whatsapp_number"/>
                 <field name="active"/>
+                
             </list>
         </field>
     </record>

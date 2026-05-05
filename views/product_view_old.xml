@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="product_template_form_philcoshop" model="ir.ui.view">
+        <field name="name">product.template.form.philcoshop</field>
+        <field name="model">product.template</field>
+        <field name="inherit_id" ref="product.product_template_only_form_view" />
+        <field name="arch" type="xml">
+            <xpath expr="//page[@name='general_information']" position="after">
+                <page name="philco_shop" string="Philco Shop">
+                    <!-- ID oculto, es el único dato guardado en Odoo -->
+                    <field name="philco_product_id" invisible="1" />
+                    <field name="philco_api_message" invisible="1" />
+                    <div class="alert alert-warning" invisible="not philco_api_message">
+                        <span class="fa fa-plug" style="margin-right: 8px;" />
+                        <field name="philco_api_message" nolabel="1" readonly="1" class="oe_inline" />
+                    </div>
+                    <group>
+                        <!-- ================================================ -->
+                        <!-- Columna izquierda: datos editables del producto   -->
+                        <!-- ================================================ -->
+                        <group string="Datos del producto en la tienda">
+                            <field name="philco_web_price" string="Precio regular" />
+                            <field name="philco_discount_price" string="Precio oferta (0 = sin oferta)" />
+                            <field name="philco_stock" string="Stock disponible" />
+                            <field name="philco_descripcion" string="Descripción" />
+                            <field name="philco_vertical_image" string="Imagen vertical" widget="image" class="oe_avatar" style="max-width: 200px; max-height: 350px;" />
+                        </group>
+                        <!-- ================================================ -->
+                        <!-- Columna derecha: visibilidad, métricas y acciones -->
+                        <!-- ================================================ -->
+                        <group string="Visibilidad y métricas">
+                            <!-- Flags de visibilidad -->
+                            <field name="philco_is_active" string="Activo en tienda" widget="boolean_toggle" />
+                            <field name="philco_is_new" string="Es nuevo" widget="boolean_toggle" />
+                            <field name="philco_is_on_sale" string="En oferta" widget="boolean_toggle" />
+                            <field name="philco_is_featured" string="Destacado" widget="boolean_toggle" />
+                            <separator />
+                            <!-- Referencia y URL -->
+                            <field name="philco_product_id" string="ID en Philco Shop" readonly="1" />
+                            <field name="philco_listing_url" string="URL del producto" widget="url" readonly="1" />
+                            <separator />
+                            <!-- Métricas — editables, el inverse las envía a Laravel -->
+                            <field name="philco_likes_count" string="Likes" />
+                            <field name="philco_shares_count" string="Compartidos" />
+                            <field name="philco_views_count" string="Vistas" />
+                            <field name="philco_sales_count" string="Ventas web" />
+                        </group>
+                    </group>
+                    <group name="action_buttons" string="Acciones" class="oe_button_box">
+                        <!-- ================================================ -->
+                        <!-- Botones de acción                                 -->
+                        <!-- ================================================ -->
+                        <button name="action_send_to_philco_shop" string="📤 Publicar en Philco Shop" type="object" class="btn-primary" invisible="philco_product_id != 0" />
+                        <!-- Solo visible cuando el producto YA está en Philco -->
+                        <button name="action_update_product" string="🔄 Actualizar todos los datos" type="object" class="btn-success" invisible="philco_product_id == 0" />
+                        <button name="action_unpublish_from_philco" string="⏸ Desactivar en tienda" type="object" class="btn-warning" invisible="philco_product_id == 0" />
+                        <button name="action_update_image" string="🖼 Actualizar imagen" type="object" class="btn-info" invisible="philco_product_id == 0" />
+                    </group>
+                </page>
+            </xpath>
+        </field>
+    </record>
+</odoo>

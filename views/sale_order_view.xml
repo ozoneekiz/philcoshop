@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- agregar campo en la vista de formulario de sale order , el campo se llama transport_company_name y es un campo char para guardar el nombre de la empresa transportista o de carga asociada al pedido. El campo se agrega debajo del campo "partner_id" que es el cliente asociado al pedido. -->
+<odoo>
+    <record id="action_print_shipping_label_a6" model="ir.actions.server">
+        <field name="name">Etiquetas de Envio A6</field>
+        <field name="model_id" ref="sale.model_sale_order"/>
+        <field name="binding_model_id" ref="sale.model_sale_order"/>
+        <field name="binding_type">report</field>
+        <field name="binding_view_types">list,form</field>
+        <field name="state">code</field>
+        <field name="code">action = records.action_print_shipping_label_a6()</field>
+    </record>
+
+    <record id="action_print_shipping_label_a4" model="ir.actions.server">
+        <field name="name">Etiquetas de Envio A4</field>
+        <field name="model_id" ref="sale.model_sale_order"/>
+        <field name="binding_model_id" ref="sale.model_sale_order"/>
+        <field name="binding_type">report</field>
+        <field name="binding_view_types">list,form</field>
+        <field name="state">code</field>
+        <field name="code">action = records.action_print_shipping_label_a4()</field>
+    </record>
+
+    <record id="view_sale_order_form_philco" model="ir.ui.view">
+        <field name="name">sale.order.form.philco</field>
+        <field name="model">sale.order</field>
+        <field name="inherit_id" ref="sale.view_order_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//header" position="inside">
+                <button name="action_print_shipping_label_a6"
+                        string="Etiqueta A6"
+                        type="object"
+                        class="btn-secondary"
+                        icon="fa-tag"/>
+                <button name="action_print_shipping_label_a4"
+                        string="Etiquetas A4"
+                        type="object"
+                        class="btn-secondary"
+                        icon="fa-tags"/>
+            </xpath>
+            <xpath expr="//field[@name='partner_id']" position="after">
+                <field name="transport_company_name" string="Transportista"/>
+                <field name="package_count" string="Nro. Paquetes" widget="integer" options="{'min': 0}"/>
+                <field name="label_printed" string="Etiqueta Impresa"/>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="view_sale_order_tree_philco_labels" model="ir.ui.view">
+        <field name="name">sale.order.list.philco.labels</field>
+        <field name="model">sale.order</field>
+        <field name="inherit_id" ref="sale.view_order_tree"/>
+        <field name="arch" type="xml">
+            <xpath expr="//list" position="attributes">
+                <attribute name="decoration-warning">not transport_company_name</attribute>
+            </xpath>
+            <xpath expr="//list/header" position="inside">
+                <button name="action_print_shipping_label_a6"
+                        string="Etiquetas A6"
+                        type="object"
+                        class="btn-secondary"/>
+                <button name="action_print_shipping_label_a4"
+                        string="Etiquetas A4"
+                        type="object"
+                        class="btn-secondary"/>
+            </xpath>
+            <xpath expr="//field[@name='partner_id']" position="after">
+                <field name="transport_company_name" optional="show"/>
+                <field name="label_printed" widget="boolean_toggle" optional="show"/>
+                <field name="package_count" string="Nro. Paquetes" optional="show"/>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="view_sales_order_filter_philco_labels" model="ir.ui.view">
+        <field name="name">sale.order.search.philco.labels</field>
+        <field name="model">sale.order</field>
+        <field name="inherit_id" ref="sale.view_sales_order_filter"/>
+        <field name="arch" type="xml">
+            <xpath expr="//filter[@name='my_sale_orders_filter']" position="after">
+                <separator/>
+                <filter string="Etiquetas sin imprimir" name="philco_labels_not_printed" domain="[('label_printed', '=', False)]"/>
+                <filter string="Etiquetas impresas" name="philco_labels_printed" domain="[('label_printed', '=', True)]"/>
+                <filter string="Sin transportista" name="philco_without_transport" domain="[('transport_company_name', '=', False)]"/>
+            </xpath>
+        </field>
+    </record>
+</odoo>

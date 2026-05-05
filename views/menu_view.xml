@@ -1,23 +1,48 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
     <data>
+    
         <!-- Menú principal en root -->
         <menuitem id="philco_web_menu"
                   name="Philco Shop"
                   sequence="10"/> <!-- sin parent y sin action, menú padre -->
 
-        <!-- Submenú para Pedidos de Philco Shop -->
-        <menuitem id="philcoshop_web_orders_menu"
+       
+
+        <!-- menu header para Pedidos de Philco Shop -->
+        <!-- <menuitem id="philcoshop_web_orders_menu"
                   name="Pedidos"
                   parent="philco_web_menu"
                   action="action_philco_web_order"
+                  sequence="10"/> -->
+
+        <record id="action_philco_active_products" model="ir.actions.act_window">
+            <field name="name">Productos activos en tienda</field>
+            <field name="res_model">product.template</field>
+            <field name="view_mode">kanban,list,form</field>
+            <field name="domain">[('philco_is_active', '=', True)]</field>
+            <field name="context">{'search_default_philco_active': 1}</field>
+        </record>
+
+        <!-- menu header para productos activos en tienda, crear filtros y demas, la idea es el modelo producto tal cual como se muestra en punto de venta pero filtrarlo por activo en tienda  -->
+        <menuitem id="philco_products_menu"
+                  name="Productos"
+                  parent="philco_web_menu"
+                  action="action_philco_active_products"
                   sequence="10"/>
 
-        <!-- Submenú de Configuración debajo de "Philco Shop" -->
+        <!-- menu header para Configuración debajo de "Philco Shop" -->
         <menuitem id="philco_settings_menu"
                   name="Conexion"
                   parent="philco_web_menu"
                   action="action_philco_settings"
                   sequence="20"/>
+        <!-- menu header para Videos Publicitarios debajo de "Philco Shop" -->
+        <menuitem id="philco_advertisement_video_menu"
+                  name="Videos Publicitarios"
+                  parent="philco_web_menu"
+                  action="action_advertisement_video"
+                  sequence="30"/>
+        
     </data>
 </odoo>
